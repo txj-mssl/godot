@@ -1625,8 +1625,10 @@ void EditorHelpBit::_bind_methods() {
 void EditorHelpBit::_notification(int p_what) {
 	switch (p_what) {
 		case NOTIFICATION_READY: {
-			rich_text->clear();
-			_add_text_to_rt(text, rich_text);
+			//rich_text->clear();
+			//_add_text_to_rt(text, rich_text);
+			set_theme(EditorNode::get_singleton()->get_theme_base()->get_theme());//修补增加
+			set_text(text);//修补增加
 
 		} break;
 		case EditorSettings::NOTIFICATION_EDITOR_SETTINGS_CHANGED: {
@@ -1640,7 +1642,10 @@ void EditorHelpBit::_notification(int p_what) {
 void EditorHelpBit::set_text(const String &p_text) {
 	text = p_text;
 	rich_text->clear();
+	Ref<Font> doc_font = get_theme_font("doc", "EditorFonts");//修补增加
+	rich_text->push_font(doc_font);//修补增加
 	_add_text_to_rt(text, rich_text);
+	rich_text->pop();//修补增加
 }
 
 EditorHelpBit::EditorHelpBit() {
