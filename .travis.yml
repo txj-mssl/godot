@@ -55,23 +55,21 @@ matrix:
           packages:
             - *linux_deps
 
-# TODO: Android support
-
-#    - name: Android export template (release_debug, Clang)
-#      stage: build
-#      env: PLATFORM=android TOOLS=no TARGET=release_debug CACHE_NAME=${PLATFORM}-clang EXTRA_ARGS="warnings=extra werror=yes"
-#      os: linux
-#      compiler: clang
-#      addons:
-#        apt:
-#          packages:
-#            - openjdk-8-jdk
+    - name: Android export template (release_debug, Clang)
+      stage: build
+      env: PLATFORM=android TOOLS=no TARGET=release_debug CACHE_NAME=${PLATFORM}-clang EXTRA_ARGS="warnings=extra werror=yes"
+      os: linux
+      compiler: clang
+      addons:
+        apt:
+          packages:
+            - openjdk-8-jdk
 
     - name: macOS editor (debug, Clang)
       stage: build
       env: PLATFORM=osx TOOLS=yes TARGET=debug CACHE_NAME=${PLATFORM}-tools-clang EXTRA_ARGS="warnings=extra werror=yes"
       os: osx
-      osx_image: xcode11.3
+      osx_image: xcode11.5
       compiler: clang
       addons:
         homebrew:
@@ -85,27 +83,12 @@ matrix:
 #      stage: build
 #      env: PLATFORM=iphone TOOLS=no TARGET=debug CACHE_NAME=${PLATFORM}-clang
 #      os: osx
-#      osx_image: xcode11.3
+#      osx_image: xcode11.5
 #      compiler: clang
 #      addons:
 #        homebrew:
 #          packages:
 #            - scons
-
-# TODO: Dummy/Offscreen rasterizer
-
-#    - name: Linux headless editor (release_debug, GCC 9, testing project exporting and script running)
-#      stage: build
-#      env: PLATFORM=server TOOLS=yes TARGET=release_debug CACHE_NAME=${PLATFORM}-tools-gcc-9 MATRIX_EVAL="CC=gcc-9 && CXX=g++-9" EXTRA_ARGS="warnings=extra werror=yes" TEST_PROJECT=yes
-#      os: linux
-#      compiler: gcc-9
-#      addons:
-#        apt:
-#          sources:
-#            - sourceline: "ppa:ubuntu-toolchain-r/test"
-#          packages:
-#            - *gcc9_deps
-#            - *linux_deps
 
     - name: Linux export template (release_debug, GCC 7, without 3D support)
       stage: build
@@ -145,7 +128,7 @@ install:
   - if [ "$PLATFORM" = "javascript" ]; then
       git clone --depth 1 "https://github.com/emscripten-core/emsdk.git";
       ./emsdk/emsdk install latest;
-      ./emsdk/emsdk activate latest;
+      ./emsdk/emsdk activate --no-embedded latest;
     fi
   - if [ "$STATIC_CHECKS" = "yes" ]; then
       unset SCONS_CACHE;

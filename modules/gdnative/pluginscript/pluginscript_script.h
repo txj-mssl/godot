@@ -38,18 +38,17 @@
 #include <pluginscript/godot_pluginscript.h>
 
 class PluginScript : public Script {
-
 	GDCLASS(PluginScript, Script);
 
 	friend class PluginScriptInstance;
 	friend class PluginScriptLanguage;
 
 private:
-	godot_pluginscript_script_data *_data;
-	const godot_pluginscript_script_desc *_desc;
-	PluginScriptLanguage *_language;
-	bool _tool;
-	bool _valid;
+	godot_pluginscript_script_data *_data = nullptr;
+	const godot_pluginscript_script_desc *_desc = nullptr;
+	PluginScriptLanguage *_language = nullptr;
+	bool _tool = false;
+	bool _valid = false;
 
 	Ref<Script> _ref_base_parent;
 	StringName _native_parent;
@@ -71,6 +70,8 @@ private:
 
 protected:
 	static void _bind_methods();
+
+	bool inherits_script(const Ref<Script> &p_script) const;
 
 	PluginScriptInstance *_create_instance(const Variant **p_args, int p_argcount, Object *p_owner, Callable::CallError &r_error);
 	Variant _new(const Variant **p_args, int p_argcount, Callable::CallError &r_error);

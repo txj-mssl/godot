@@ -34,12 +34,10 @@
 #include "editor/editor_node.h"
 #include "editor/editor_plugin.h"
 #include "scene/2d/path_2d.h"
-#include "scene/gui/tool_button.h"
 
 class CanvasItemEditor;
 
 class Path2DEditor : public HBoxContainer {
-
 	GDCLASS(Path2DEditor, HBoxContainer);
 
 	UndoRedo *undo_redo;
@@ -61,11 +59,11 @@ class Path2DEditor : public HBoxContainer {
 	};
 
 	Mode mode;
-	ToolButton *curve_create;
-	ToolButton *curve_edit;
-	ToolButton *curve_edit_curve;
-	ToolButton *curve_del;
-	ToolButton *curve_close;
+	Button *curve_create;
+	Button *curve_edit;
+	Button *curve_edit_curve;
+	Button *curve_del;
+	Button *curve_close;
 	MenuButton *handle_menu;
 
 	bool mirror_handle_angle;
@@ -112,7 +110,6 @@ public:
 };
 
 class Path2DEditorPlugin : public EditorPlugin {
-
 	GDCLASS(Path2DEditorPlugin, EditorPlugin);
 
 	Path2DEditor *path2d_editor;

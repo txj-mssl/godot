@@ -32,6 +32,7 @@
 #define GDSCRIPT_TOKENIZER_H
 
 #include "core/pair.h"
+#include "core/set.h"
 #include "core/string_name.h"
 #include "core/ustring.h"
 #include "core/variant.h"
@@ -175,11 +176,10 @@ public:
 	virtual bool is_ignoring_warnings() const = 0;
 #endif // DEBUG_ENABLED
 
-	virtual ~GDScriptTokenizer(){};
+	virtual ~GDScriptTokenizer() {}
 };
 
 class GDScriptTokenizerText : public GDScriptTokenizer {
-
 	enum {
 		MAX_LOOKAHEAD = 4,
 		TK_RB_SIZE = MAX_LOOKAHEAD * 2 + 1
@@ -251,7 +251,6 @@ public:
 };
 
 class GDScriptTokenizerBuffer : public GDScriptTokenizer {
-
 	enum {
 
 		TOKEN_BYTE_MASK = 0x80,

@@ -41,7 +41,6 @@
 #include "scene/resources/visual_shader.h"
 
 class VisualShaderNodePlugin : public Reference {
-
 	GDCLASS(VisualShaderNodePlugin, Reference);
 
 protected:
@@ -52,7 +51,6 @@ public:
 };
 
 class VisualShaderEditor : public VBoxContainer {
-
 	GDCLASS(VisualShaderEditor, VBoxContainer);
 
 	CustomPropertyEditor *property_editor;
@@ -62,8 +60,8 @@ class VisualShaderEditor : public VBoxContainer {
 	Ref<VisualShader> visual_shader;
 	HSplitContainer *main_box;
 	GraphEdit *graph;
-	ToolButton *add_node;
-	ToolButton *preview_shader;
+	Button *add_node;
+	Button *preview_shader;
 
 	OptionButton *edit_type;
 
@@ -157,7 +155,6 @@ class VisualShaderEditor : public VBoxContainer {
 		}
 	};
 	struct _OptionComparator {
-
 		_FORCE_INLINE_ bool operator()(const AddOption &a, const AddOption &b) const {
 			return a.category.count("/") > b.category.count("/") || (a.category + "/" + a.name).naturalnocasecmp_to(b.category + "/" + b.name) < 0;
 		}
@@ -290,7 +287,6 @@ public:
 };
 
 class VisualShaderEditorPlugin : public EditorPlugin {
-
 	GDCLASS(VisualShaderEditorPlugin, EditorPlugin);
 
 	VisualShaderEditor *visual_shader_editor;
@@ -309,7 +305,6 @@ public:
 };
 
 class VisualShaderNodePluginDefault : public VisualShaderNodePlugin {
-
 	GDCLASS(VisualShaderNodePluginDefault, VisualShaderNodePlugin);
 
 public:
@@ -338,7 +333,7 @@ class EditorInspectorShaderModePlugin : public EditorInspectorPlugin {
 public:
 	virtual bool can_handle(Object *p_object);
 	virtual void parse_begin(Object *p_object);
-	virtual bool parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage);
+	virtual bool parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage, bool p_wide = false);
 	virtual void parse_end();
 };
 

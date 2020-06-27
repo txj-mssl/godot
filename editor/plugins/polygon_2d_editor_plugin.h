@@ -35,7 +35,6 @@
 #include "scene/gui/scroll_container.h"
 
 class Polygon2DEditor : public AbstractPolygon2DEditor {
-
 	GDCLASS(Polygon2DEditor, AbstractPolygon2DEditor);
 
 	enum Mode {
@@ -61,16 +60,16 @@ class Polygon2DEditor : public AbstractPolygon2DEditor {
 		UV_MODE_MAX
 	};
 
-	ToolButton *uv_edit_mode[4];
+	Button *uv_edit_mode[4];
 	Ref<ButtonGroup> uv_edit_group;
 
 	Polygon2D *node;
 
 	UVMode uv_mode;
 	AcceptDialog *uv_edit;
-	ToolButton *uv_button[UV_MODE_MAX];
-	ToolButton *b_snap_enable;
-	ToolButton *b_snap_grid;
+	Button *uv_button[UV_MODE_MAX];
+	Button *b_snap_enable;
+	Button *b_snap_grid;
 	Panel *uv_edit_draw;
 	HSlider *uv_zoom;
 	SpinBox *uv_zoom_value;
@@ -116,7 +115,7 @@ class Polygon2DEditor : public AbstractPolygon2DEditor {
 
 	AcceptDialog *error;
 
-	ToolButton *button_uv;
+	Button *button_uv;
 
 	bool use_snap;
 	bool snap_show_grid;
@@ -165,7 +164,6 @@ public:
 };
 
 class Polygon2DEditorPlugin : public AbstractPolygon2DEditorPlugin {
-
 	GDCLASS(Polygon2DEditorPlugin, AbstractPolygon2DEditorPlugin);
 
 public:

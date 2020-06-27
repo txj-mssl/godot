@@ -38,7 +38,6 @@
 #include "scene/resources/texture.h"
 
 class AudioStreamEditor : public ColorRect {
-
 	GDCLASS(AudioStreamEditor, ColorRect);
 
 	Ref<AudioStream> stream;
@@ -48,8 +47,8 @@ class AudioStreamEditor : public ColorRect {
 	Label *_current_label;
 	Label *_duration_label;
 
-	ToolButton *_play_button;
-	ToolButton *_stop_button;
+	Button *_play_button;
+	Button *_stop_button;
 
 	float _current;
 	bool _dragging;
@@ -73,7 +72,6 @@ public:
 };
 
 class AudioStreamEditorPlugin : public EditorPlugin {
-
 	GDCLASS(AudioStreamEditorPlugin, EditorPlugin);
 
 	AudioStreamEditor *audio_editor;

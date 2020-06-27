@@ -43,7 +43,6 @@ class AnimationTrackEditor;
 class AnimationPlayerEditorPlugin;
 
 class AnimationPlayerEditor : public VBoxContainer {
-
 	GDCLASS(AnimationPlayerEditor, VBoxContainer);
 
 	EditorNode *editor;
@@ -97,9 +96,9 @@ class AnimationPlayerEditor : public VBoxContainer {
 	Button *autoplay;
 
 	MenuButton *tool_anim;
-	ToolButton *onion_toggle;
+	Button *onion_toggle;
 	MenuButton *onion_skinning;
-	ToolButton *pin;
+	Button *pin;
 	SpinBox *frame;
 	LineEdit *scale;
 	LineEdit *name;
@@ -114,7 +113,6 @@ class AnimationPlayerEditor : public VBoxContainer {
 	int current_option;
 
 	struct BlendEditor {
-
 		AcceptDialog *dialog;
 		Tree *tree;
 		OptionButton *next;
@@ -244,7 +242,6 @@ public:
 };
 
 class AnimationPlayerEditorPlugin : public EditorPlugin {
-
 	GDCLASS(AnimationPlayerEditorPlugin, EditorPlugin);
 
 	AnimationPlayerEditor *anim_editor;

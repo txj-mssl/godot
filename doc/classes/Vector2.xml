@@ -5,7 +5,8 @@
 	</brief_description>
 	<description>
 		2-element structure that can be used to represent positions in 2D space or any other pair of numeric values.
-		It uses floating point coordinates.
+		It uses floating-point coordinates. See [Vector2i] for its integer counterpart.
+		[b]Note:[/b] In a boolean context, a Vector2 will evaluate to [code]false[/code] if it's equal to [code]Vector2(0, 0)[/code]. Otherwise, a Vector2 will always evaluate to [code]true[/code].
 	</description>
 	<tutorials>
 		<link>https://docs.godotengine.org/en/latest/tutorials/math/index.html</link>
@@ -193,7 +194,7 @@
 				Returns the vector's length squared. Prefer this method over [method length] if you need to sort vectors or need the squared length for some formula.
 			</description>
 		</method>
-		<method name="linear_interpolate">
+		<method name="lerp">
 			<return type="Vector2">
 			</return>
 			<argument index="0" name="b" type="Vector2">

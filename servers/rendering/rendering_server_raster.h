@@ -40,7 +40,6 @@
 #include "servers/rendering_server.h"
 
 class RenderingServerRaster : public RenderingServer {
-
 	enum {
 
 		MAX_INSTANCE_CULL = 8192,
@@ -61,7 +60,6 @@ class RenderingServerRaster : public RenderingServer {
 	RID black_image[4];
 
 	struct FrameDrawnCallbacks {
-
 		ObjectID object;
 		StringName method;
 		Variant param;
@@ -98,6 +96,8 @@ public:
 
 #define BIND0R(m_r, m_name) \
 	m_r m_name() { return BINDBASE->m_name(); }
+#define BIND0RC(m_r, m_name) \
+	m_r m_name() const { return BINDBASE->m_name(); }
 #define BIND1R(m_r, m_name, m_type1) \
 	m_r m_name(m_type1 arg1) { return BINDBASE->m_name(arg1); }
 #define BIND1RC(m_r, m_name, m_type1) \
@@ -106,13 +106,21 @@ public:
 	m_r m_name(m_type1 arg1, m_type2 arg2) { return BINDBASE->m_name(arg1, arg2); }
 #define BIND2RC(m_r, m_name, m_type1, m_type2) \
 	m_r m_name(m_type1 arg1, m_type2 arg2) const { return BINDBASE->m_name(arg1, arg2); }
+#define BIND3R(m_r, m_name, m_type1, m_type2, m_type3) \
+	m_r m_name(m_type1 arg1, m_type2 arg2, m_type3 arg3) { return BINDBASE->m_name(arg1, arg2, arg3); }
 #define BIND3RC(m_r, m_name, m_type1, m_type2, m_type3) \
 	m_r m_name(m_type1 arg1, m_type2 arg2, m_type3 arg3) const { return BINDBASE->m_name(arg1, arg2, arg3); }
+#define BIND4R(m_r, m_name, m_type1, m_type2, m_type3, m_type4) \
+	m_r m_name(m_type1 arg1, m_type2 arg2, m_type3 arg3, m_type4 arg4) { return BINDBASE->m_name(arg1, arg2, arg3, arg4); }
 #define BIND4RC(m_r, m_name, m_type1, m_type2, m_type3, m_type4) \
 	m_r m_name(m_type1 arg1, m_type2 arg2, m_type3 arg3, m_type4 arg4) const { return BINDBASE->m_name(arg1, arg2, arg3, arg4); }
 
+#define BIND0(m_name) \
+	void m_name() { DISPLAY_CHANGED BINDBASE->m_name(); }
 #define BIND1(m_name, m_type1) \
 	void m_name(m_type1 arg1) { DISPLAY_CHANGED BINDBASE->m_name(arg1); }
+#define BIND1C(m_name, m_type1) \
+	void m_name(m_type1 arg1) const { DISPLAY_CHANGED BINDBASE->m_name(arg1); }
 #define BIND2(m_name, m_type1, m_type2) \
 	void m_name(m_type1 arg1, m_type2 arg2) { DISPLAY_CHANGED BINDBASE->m_name(arg1, arg2); }
 #define BIND2C(m_name, m_type1, m_type2) \
@@ -164,7 +172,7 @@ public:
 
 	//these also go pass-through
 	BIND0R(RID, texture_2d_placeholder_create)
-	BIND0R(RID, texture_2d_layered_placeholder_create)
+	BIND1R(RID, texture_2d_layered_placeholder_create, TextureLayeredType)
 	BIND0R(RID, texture_3d_placeholder_create)
 
 	BIND1RC(Ref<Image>, texture_2d_get, RID)
@@ -314,7 +322,8 @@ public:
 	BIND2(light_set_negative, RID, bool)
 	BIND2(light_set_cull_mask, RID, uint32_t)
 	BIND2(light_set_reverse_cull_face_mode, RID, bool)
-	BIND2(light_set_use_gi, RID, bool)
+	BIND2(light_set_bake_mode, RID, LightBakeMode)
+	BIND2(light_set_max_sdfgi_cascade, RID, uint32_t)
 
 	BIND2(light_omni_set_shadow_mode, RID, LightOmniShadowMode)
 
@@ -328,9 +337,9 @@ public:
 
 	BIND2(reflection_probe_set_update_mode, RID, ReflectionProbeUpdateMode)
 	BIND2(reflection_probe_set_intensity, RID, float)
-	BIND2(reflection_probe_set_interior_ambient, RID, const Color &)
-	BIND2(reflection_probe_set_interior_ambient_energy, RID, float)
-	BIND2(reflection_probe_set_interior_ambient_probe_contribution, RID, float)
+	BIND2(reflection_probe_set_ambient_color, RID, const Color &)
+	BIND2(reflection_probe_set_ambient_energy, RID, float)
+	BIND2(reflection_probe_set_ambient_mode, RID, ReflectionProbeAmbientMode)
 	BIND2(reflection_probe_set_max_distance, RID, float)
 	BIND2(reflection_probe_set_extents, RID, const Vector3 &)
 	BIND2(reflection_probe_set_origin_offset, RID, const Vector3 &)
@@ -339,6 +348,20 @@ public:
 	BIND2(reflection_probe_set_enable_shadows, RID, bool)
 	BIND2(reflection_probe_set_cull_mask, RID, uint32_t)
 	BIND2(reflection_probe_set_resolution, RID, int)
+
+	/* DECAL API */
+
+	BIND0R(RID, decal_create)
+
+	BIND2(decal_set_extents, RID, const Vector3 &)
+	BIND3(decal_set_texture, RID, DecalTexture, RID)
+	BIND2(decal_set_emission_energy, RID, float)
+	BIND2(decal_set_albedo_mix, RID, float)
+	BIND2(decal_set_modulate, RID, const Color &)
+	BIND2(decal_set_cull_mask, RID, uint32_t)
+	BIND4(decal_set_distance_fade, RID, bool, float, float)
+	BIND3(decal_set_fade, RID, float, float)
+	BIND2(decal_set_normal_fade, RID, float)
 
 	/* BAKED LIGHT API */
 
@@ -384,23 +407,19 @@ public:
 	BIND2(gi_probe_set_anisotropy_strength, RID, float)
 	BIND1RC(float, gi_probe_get_anisotropy_strength, RID)
 
-	/* LIGHTMAP CAPTURE */
+	/* LIGHTMAP */
 
-	BIND0R(RID, lightmap_capture_create)
+	BIND0R(RID, lightmap_create)
 
-	BIND2(lightmap_capture_set_bounds, RID, const AABB &)
-	BIND1RC(AABB, lightmap_capture_get_bounds, RID)
-
-	BIND2(lightmap_capture_set_octree, RID, const Vector<uint8_t> &)
-	BIND1RC(Vector<uint8_t>, lightmap_capture_get_octree, RID)
-
-	BIND2(lightmap_capture_set_octree_cell_transform, RID, const Transform &)
-	BIND1RC(Transform, lightmap_capture_get_octree_cell_transform, RID)
-	BIND2(lightmap_capture_set_octree_cell_subdiv, RID, int)
-	BIND1RC(int, lightmap_capture_get_octree_cell_subdiv, RID)
-
-	BIND2(lightmap_capture_set_energy, RID, float)
-	BIND1RC(float, lightmap_capture_get_energy, RID)
+	BIND3(lightmap_set_textures, RID, RID, bool)
+	BIND2(lightmap_set_probe_bounds, RID, const AABB &)
+	BIND2(lightmap_set_probe_interior, RID, bool)
+	BIND5(lightmap_set_probe_capture_data, RID, const PackedVector3Array &, const PackedColorArray &, const PackedInt32Array &, const PackedInt32Array &)
+	BIND1RC(PackedVector3Array, lightmap_get_probe_capture_points, RID)
+	BIND1RC(PackedColorArray, lightmap_get_probe_capture_sh, RID)
+	BIND1RC(PackedInt32Array, lightmap_get_probe_capture_tetrahedra, RID)
+	BIND1RC(PackedInt32Array, lightmap_get_probe_capture_bsp_tree, RID)
+	BIND1(lightmap_set_probe_capture_update_speed, float)
 
 	/* PARTICLES */
 
@@ -456,7 +475,7 @@ public:
 
 	BIND0R(RID, viewport_create)
 
-	BIND2(viewport_set_use_arvr, RID, bool)
+	BIND2(viewport_set_use_xr, RID, bool)
 	BIND3(viewport_set_size, RID, int, int)
 
 	BIND2(viewport_set_active, RID, bool)
@@ -489,9 +508,14 @@ public:
 	BIND2(viewport_set_shadow_atlas_size, RID, int)
 	BIND3(viewport_set_shadow_atlas_quadrant_subdivision, RID, int, int)
 	BIND2(viewport_set_msaa, RID, ViewportMSAA)
+	BIND2(viewport_set_screen_space_aa, RID, ViewportScreenSpaceAA)
 
 	BIND2R(int, viewport_get_render_info, RID, ViewportRenderInfo)
 	BIND2(viewport_set_debug_draw, RID, ViewportDebugDraw)
+
+	BIND2(viewport_set_measure_render_time, RID, bool)
+	BIND1RC(float, viewport_get_measured_render_time_cpu, RID)
+	BIND1RC(float, viewport_get_measured_render_time_gpu, RID)
 
 	/* ENVIRONMENT API */
 
@@ -500,6 +524,7 @@ public:
 #define BINDBASE RSG::scene_render
 
 	BIND1(directional_shadow_atlas_set_size, int)
+	BIND1(gi_probe_set_quality, GIProbeQuality)
 
 	/* SKY API */
 
@@ -507,6 +532,7 @@ public:
 	BIND2(sky_set_radiance_size, RID, int)
 	BIND2(sky_set_mode, RID, SkyMode)
 	BIND2(sky_set_material, RID, RID)
+	BIND4R(Ref<Image>, sky_bake_panorama, RID, float, bool, const Size2i &)
 
 	BIND0R(RID, environment_create)
 
@@ -540,7 +566,15 @@ public:
 	BIND7(environment_set_fog_depth, RID, bool, float, float, float, bool, float)
 	BIND5(environment_set_fog_height, RID, bool, float, float, float)
 
-	BIND2(screen_space_roughness_limiter_set_active, bool, float)
+	BIND12(environment_set_sdfgi, RID, bool, EnvironmentSDFGICascades, float, EnvironmentSDFGIYScale, bool, bool, bool, bool, float, float, float)
+	BIND1(environment_set_sdfgi_ray_count, EnvironmentSDFGIRayCount)
+	BIND1(environment_set_sdfgi_frames_to_converge, EnvironmentSDFGIFramesToConverge)
+
+	BIND3R(Ref<Image>, environment_bake_panorama, RID, bool, const Size2i &)
+
+	BIND3(screen_space_roughness_limiter_set_active, bool, float, float)
+	BIND1(sub_surface_scattering_set_quality, SubSurfaceScatteringQuality)
+	BIND2(sub_surface_scattering_set_scale, float, float)
 
 	/* CAMERA EFFECTS */
 
@@ -551,6 +585,9 @@ public:
 
 	BIND8(camera_effects_set_dof_blur, RID, bool, float, float, bool, float, float, float)
 	BIND3(camera_effects_set_custom_exposure, RID, bool, float)
+
+	BIND1(shadows_quality_set, ShadowQuality);
+	BIND1(directional_shadow_quality_set, ShadowQuality);
 
 	/* SCENARIO API */
 
@@ -575,7 +612,6 @@ public:
 	BIND3(instance_set_blend_shape_weight, RID, int, float)
 	BIND3(instance_set_surface_material, RID, int, RID)
 	BIND2(instance_set_visible, RID, bool)
-	BIND3(instance_set_use_lightmap, RID, RID, RID)
 
 	BIND2(instance_set_custom_aabb, RID, AABB)
 
@@ -595,6 +631,14 @@ public:
 
 	BIND5(instance_geometry_set_draw_range, RID, float, float, float, float)
 	BIND2(instance_geometry_set_as_instance_lod, RID, RID)
+	BIND4(instance_geometry_set_lightmap, RID, RID, const Rect2 &, int)
+
+	BIND3(instance_geometry_set_shader_parameter, RID, const StringName &, const Variant &)
+	BIND2RC(Variant, instance_geometry_get_shader_parameter, RID, const StringName &)
+	BIND2RC(Variant, instance_geometry_get_shader_parameter_default_value, RID, const StringName &)
+	BIND2C(instance_geometry_get_shader_parameter_list, RID, List<PropertyInfo> *)
+
+	BIND3R(TypedArray<Image>, bake_render_uv2, RID, const Vector<RID> &, const Size2i &)
 
 #undef BINDBASE
 //from now on, calls forwarded to this singleton
@@ -693,6 +737,23 @@ public:
 
 	BIND2(canvas_occluder_polygon_set_cull_mode, RID, CanvasOccluderPolygonCullMode)
 
+	/* GLOBAL VARIABLES */
+
+#undef BINDBASE
+//from now on, calls forwarded to this singleton
+#define BINDBASE RSG::storage
+
+	BIND3(global_variable_add, const StringName &, GlobalVariableType, const Variant &)
+	BIND1(global_variable_remove, const StringName &)
+	BIND0RC(Vector<StringName>, global_variable_get_list)
+	BIND2(global_variable_set, const StringName &, const Variant &)
+	BIND2(global_variable_set_override, const StringName &, const Variant &)
+	BIND1RC(GlobalVariableType, global_variable_get_type, const StringName &)
+	BIND1RC(Variant, global_variable_get, const StringName &)
+
+	BIND1(global_variables_load_settings, bool)
+	BIND0(global_variables_clear)
+
 	/* BLACK BARS */
 
 	virtual void black_bars_set_margins(int p_left, int p_top, int p_right, int p_bottom);
@@ -737,6 +798,8 @@ public:
 	virtual void call_set_use_vsync(bool p_enable);
 
 	virtual bool is_low_end() const;
+
+	virtual void sdfgi_set_debug_probe_select(const Vector3 &p_position, const Vector3 &p_dir);
 
 	RenderingServerRaster();
 	~RenderingServerRaster();

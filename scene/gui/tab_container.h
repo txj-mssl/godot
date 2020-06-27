@@ -34,7 +34,6 @@
 #include "scene/gui/container.h"
 #include "scene/gui/popup.h"
 class TabContainer : public Container {
-
 	GDCLASS(TabContainer, Container);
 
 public:
@@ -58,7 +57,7 @@ private:
 	TabAlign align;
 	Control *_get_tab(int p_idx) const;
 	int _get_top_margin() const;
-	Popup *popup;
+	mutable ObjectID popup_obj_id;
 	bool drag_to_rearrange_enabled;
 	bool use_hidden_tabs_for_min_size;
 	int tabs_rearrange_group;
@@ -66,6 +65,7 @@ private:
 	Vector<Control *> _get_tabs() const;
 	int _get_tab_width(int p_index) const;
 	void _on_theme_changed();
+	void _repaint();
 	void _on_mouse_exited();
 	void _update_current_tab();
 

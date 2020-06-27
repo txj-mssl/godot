@@ -44,7 +44,6 @@
 #include "scene/gui/spin_box.h"
 #include "scene/gui/tab_container.h"
 #include "scene/gui/texture_rect.h"
-#include "scene/gui/tool_button.h"
 #include "scene/resources/animation.h"
 #include "scene_tree_editor.h"
 
@@ -59,7 +58,7 @@ class AnimationTimelineEdit : public Range {
 
 	HBoxContainer *len_hb;
 	EditorSpinSlider *length;
-	ToolButton *loop;
+	Button *loop;
 	TextureRect *time_icon;
 
 	MenuButton *add_track;
@@ -121,7 +120,6 @@ public:
 class AnimationTrackEditor;
 
 class AnimationTrackEdit : public Control {
-
 	GDCLASS(AnimationTrackEdit, Control);
 
 	enum {
@@ -311,7 +309,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	HSlider *zoom;
 	EditorSpinSlider *step;
 	TextureRect *zoom_icon;
-	ToolButton *snap;
+	Button *snap;
 	OptionButton *snap_mode;
 
 	Button *imported_anim_warning;
@@ -354,7 +352,6 @@ class AnimationTrackEditor : public VBoxContainer {
 	bool keying;
 
 	struct InsertData {
-
 		Animation::TrackType type;
 		NodePath path;
 		int track_idx;
@@ -395,14 +392,12 @@ class AnimationTrackEditor : public VBoxContainer {
 	//selection
 
 	struct SelectedKey {
-
 		int track;
 		int key;
 		bool operator<(const SelectedKey &p_key) const { return track == p_key.track ? key < p_key.key : track < p_key.track; };
 	};
 
 	struct KeyInfo {
-
 		float pos;
 	};
 
@@ -461,8 +456,8 @@ class AnimationTrackEditor : public VBoxContainer {
 	void _anim_duplicate_keys(bool transpose);
 
 	void _view_group_toggle();
-	ToolButton *view_group;
-	ToolButton *selected_filter;
+	Button *view_group;
+	Button *selected_filter;
 
 	void _selection_changed();
 

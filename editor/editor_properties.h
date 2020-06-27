@@ -361,7 +361,7 @@ protected:
 public:
 	virtual void update_property();
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
-	EditorPropertyVector2();
+	EditorPropertyVector2(bool p_force_wide = false);
 };
 
 class EditorPropertyRect2 : public EditorProperty {
@@ -377,7 +377,7 @@ protected:
 public:
 	virtual void update_property();
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
-	EditorPropertyRect2();
+	EditorPropertyRect2(bool p_force_wide = false);
 };
 
 class EditorPropertyVector3 : public EditorProperty {
@@ -392,8 +392,58 @@ protected:
 
 public:
 	virtual void update_property();
+	virtual void update_using_vector(Vector3 p_vector);
+	virtual Vector3 get_vector();
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
-	EditorPropertyVector3();
+	EditorPropertyVector3(bool p_force_wide = false);
+};
+
+class EditorPropertyVector2i : public EditorProperty {
+	GDCLASS(EditorPropertyVector2i, EditorProperty);
+	EditorSpinSlider *spin[2];
+	bool setting;
+	void _value_changed(double p_val, const String &p_name);
+
+protected:
+	void _notification(int p_what);
+	static void _bind_methods();
+
+public:
+	virtual void update_property();
+	void setup(int p_min, int p_max, bool p_no_slider);
+	EditorPropertyVector2i(bool p_force_wide = false);
+};
+
+class EditorPropertyRect2i : public EditorProperty {
+	GDCLASS(EditorPropertyRect2i, EditorProperty);
+	EditorSpinSlider *spin[4];
+	bool setting;
+	void _value_changed(double p_val, const String &p_name);
+
+protected:
+	void _notification(int p_what);
+	static void _bind_methods();
+
+public:
+	virtual void update_property();
+	void setup(int p_min, int p_max, bool p_no_slider);
+	EditorPropertyRect2i(bool p_force_wide = false);
+};
+
+class EditorPropertyVector3i : public EditorProperty {
+	GDCLASS(EditorPropertyVector3i, EditorProperty);
+	EditorSpinSlider *spin[3];
+	bool setting;
+	void _value_changed(double p_val, const String &p_name);
+
+protected:
+	void _notification(int p_what);
+	static void _bind_methods();
+
+public:
+	virtual void update_property();
+	void setup(int p_min, int p_max, bool p_no_slider);
+	EditorPropertyVector3i(bool p_force_wide = false);
 };
 
 class EditorPropertyPlane : public EditorProperty {
@@ -409,7 +459,7 @@ protected:
 public:
 	virtual void update_property();
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
-	EditorPropertyPlane();
+	EditorPropertyPlane(bool p_force_wide = false);
 };
 
 class EditorPropertyQuat : public EditorProperty {
@@ -488,6 +538,7 @@ protected:
 
 public:
 	virtual void update_property();
+	virtual void update_using_transform(Transform p_transform);
 	void setup(double p_min, double p_max, double p_step, bool p_no_slider);
 	EditorPropertyTransform();
 };
@@ -626,7 +677,7 @@ class EditorInspectorDefaultPlugin : public EditorInspectorPlugin {
 public:
 	virtual bool can_handle(Object *p_object);
 	virtual void parse_begin(Object *p_object);
-	virtual bool parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage);
+	virtual bool parse_property(Object *p_object, Variant::Type p_type, const String &p_path, PropertyHint p_hint, const String &p_hint_text, int p_usage, bool p_wide = false);
 	virtual void parse_end();
 };
 

@@ -43,13 +43,11 @@
 #include "scene/gui/split_container.h"
 #include "scene/gui/tab_container.h"
 #include "scene/gui/text_edit.h"
-#include "scene/gui/tool_button.h"
 #include "scene/gui/tree.h"
 #include "scene/main/timer.h"
 #include "scene/resources/text_file.h"
 
 class ScriptEditorQuickOpen : public ConfirmationDialog {
-
 	GDCLASS(ScriptEditorQuickOpen, ConfirmationDialog);
 
 	LineEdit *search_box;
@@ -76,7 +74,6 @@ public:
 class EditorDebuggerNode;
 
 class ScriptEditorBase : public VBoxContainer {
-
 	GDCLASS(ScriptEditorBase, VBoxContainer);
 
 protected:
@@ -131,7 +128,6 @@ class FindInFilesDialog;
 class FindInFilesPanel;
 
 class ScriptEditor : public PanelContainer {
-
 	GDCLASS(ScriptEditor, PanelContainer);
 
 	EditorNode *editor;
@@ -214,7 +210,7 @@ class ScriptEditor : public PanelContainer {
 	VBoxContainer *overview_vbox;
 	HBoxContainer *buttons_hbox;
 	Label *filename;
-	ToolButton *members_overview_alphabeta_sort_button;
+	Button *members_overview_alphabeta_sort_button;
 	bool members_overview_enabled;
 	ItemList *help_overview;
 	bool help_overview_enabled;
@@ -224,15 +220,15 @@ class ScriptEditor : public PanelContainer {
 	AcceptDialog *error_dialog;
 	ConfirmationDialog *erase_tab_confirm;
 	ScriptCreateDialog *script_create_dialog;
-	ToolButton *scripts_visible;
+	Button *scripts_visible;
 
 	String current_theme;
 
 	TextureRect *script_icon;
 	Label *script_name_label;
 
-	ToolButton *script_back;
-	ToolButton *script_forward;
+	Button *script_back;
+	Button *script_forward;
 
 	FindInFilesDialog *find_in_files_dialog;
 	FindInFilesPanel *find_in_files;
@@ -250,7 +246,6 @@ class ScriptEditor : public PanelContainer {
 	static CreateSyntaxHighlighterFunc syntax_highlighters_funcs[SYNTAX_HIGHLIGHTER_FUNC_MAX];
 
 	struct ScriptHistory {
-
 		Control *control;
 		Variant state;
 	};
@@ -454,7 +449,6 @@ public:
 };
 
 class ScriptEditorPlugin : public EditorPlugin {
-
 	GDCLASS(ScriptEditorPlugin, EditorPlugin);
 
 	ScriptEditor *script_editor;

@@ -37,14 +37,13 @@
 #include "scene/resources/material.h"
 
 class GIProbeEditorPlugin : public EditorPlugin {
-
 	GDCLASS(GIProbeEditorPlugin, EditorPlugin);
 
 	GIProbe *gi_probe;
 
 	HBoxContainer *bake_hb;
 	Label *bake_info;
-	ToolButton *bake;
+	Button *bake;
 	EditorNode *editor;
 
 	EditorFileDialog *probe_file;

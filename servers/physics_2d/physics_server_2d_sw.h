@@ -39,7 +39,6 @@
 #include "step_2d_sw.h"
 
 class PhysicsServer2DSW : public PhysicsServer2D {
-
 	GDCLASS(PhysicsServer2DSW, PhysicsServer2D);
 
 	friend class PhysicsDirectSpaceState2DSW;
@@ -79,7 +78,6 @@ class PhysicsServer2DSW : public PhysicsServer2D {
 
 public:
 	struct CollCbkData {
-
 		Vector2 valid_dir;
 		real_t valid_depth;
 		int max;
@@ -268,8 +266,8 @@ public:
 	virtual RID damped_spring_joint_create(const Vector2 &p_anchor_a, const Vector2 &p_anchor_b, RID p_body_a, RID p_body_b = RID());
 	virtual void pin_joint_set_param(RID p_joint, PinJointParam p_param, real_t p_value);
 	virtual real_t pin_joint_get_param(RID p_joint, PinJointParam p_param) const;
-	virtual void damped_string_joint_set_param(RID p_joint, DampedStringParam p_param, real_t p_value);
-	virtual real_t damped_string_joint_get_param(RID p_joint, DampedStringParam p_param) const;
+	virtual void damped_spring_joint_set_param(RID p_joint, DampedSpringParam p_param, real_t p_value);
+	virtual real_t damped_spring_joint_get_param(RID p_joint, DampedSpringParam p_param) const;
 
 	virtual JointType joint_get_type(RID p_joint) const;
 
@@ -290,7 +288,7 @@ public:
 	int get_process_info(ProcessInfo p_info);
 
 	PhysicsServer2DSW();
-	~PhysicsServer2DSW();
+	~PhysicsServer2DSW() {}
 };
 
 #endif

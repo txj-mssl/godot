@@ -35,7 +35,6 @@
 #include "scene/resources/curve.h"
 
 class Path3D : public Node3D {
-
 	GDCLASS(Path3D, Node3D);
 
 	Ref<Curve3D> curve;
@@ -50,11 +49,10 @@ public:
 	void set_curve(const Ref<Curve3D> &p_curve);
 	Ref<Curve3D> get_curve() const;
 
-	Path3D();
+	Path3D() {}
 };
 
 class PathFollow3D : public Node3D {
-
 	GDCLASS(PathFollow3D, Node3D);
 
 public:

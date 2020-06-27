@@ -36,12 +36,11 @@
 #include "scene/3d/camera_3d.h"
 #include "scene/3d/light_3d.h"
 #include "scene/3d/mesh_instance_3d.h"
-#include "scene/gui/viewport_container.h"
+#include "scene/gui/subviewport_container.h"
 #include "scene/resources/material.h"
 
-class MeshEditor : public ViewportContainer {
-
-	GDCLASS(MeshEditor, ViewportContainer);
+class MeshEditor : public SubViewportContainer {
+	GDCLASS(MeshEditor, SubViewportContainer);
 
 	float rot_x;
 	float rot_y;
@@ -82,7 +81,6 @@ public:
 };
 
 class MeshEditorPlugin : public EditorPlugin {
-
 	GDCLASS(MeshEditorPlugin, EditorPlugin);
 
 public:

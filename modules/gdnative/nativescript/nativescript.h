@@ -43,20 +43,21 @@
 #include "scene/main/node.h"
 
 #include "modules/gdnative/gdnative.h"
+
 #include <nativescript/godot_nativescript.h>
 
 struct NativeScriptDesc {
-
 	struct Method {
-		godot_instance_method method;
+		godot_nativescript_instance_method method;
 		MethodInfo info;
 		int rpc_mode;
 		uint16_t rpc_method_id;
 		String documentation;
 	};
+
 	struct Property {
-		godot_property_set_func setter;
-		godot_property_get_func getter;
+		godot_nativescript_property_set_func setter;
+		godot_nativescript_property_get_func getter;
 		PropertyInfo info;
 		Variant default_value;
 		int rset_mode;
@@ -69,35 +70,26 @@ struct NativeScriptDesc {
 		String documentation;
 	};
 
-	uint16_t rpc_count;
+	uint16_t rpc_count = 0;
 	Map<StringName, Method> methods;
-	uint16_t rset_count;
+	uint16_t rset_count = 0;
 	OrderedHashMap<StringName, Property> properties;
 	Map<StringName, Signal> signals_; // QtCreator doesn't like the name signals
 	StringName base;
 	StringName base_native_type;
 	NativeScriptDesc *base_data;
-	godot_instance_create_func create_func;
-	godot_instance_destroy_func destroy_func;
+	godot_nativescript_instance_create_func create_func;
+	godot_nativescript_instance_destroy_func destroy_func;
 
 	String documentation;
 
-	const void *type_tag;
+	const void *type_tag = nullptr;
 
 	bool is_tool;
 
-	inline NativeScriptDesc() :
-			rpc_count(0),
-			methods(),
-			rset_count(0),
-			properties(),
-			signals_(),
-			base(),
-			base_native_type(),
-			documentation(),
-			type_tag(nullptr) {
-		zeromem(&create_func, sizeof(godot_instance_create_func));
-		zeromem(&destroy_func, sizeof(godot_instance_destroy_func));
+	inline NativeScriptDesc() {
+		zeromem(&create_func, sizeof(godot_nativescript_instance_create_func));
+		zeromem(&destroy_func, sizeof(godot_nativescript_instance_destroy_func));
 	}
 };
 
@@ -132,6 +124,8 @@ protected:
 
 public:
 	inline NativeScriptDesc *get_script_desc() const;
+
+	bool inherits_script(const Ref<Script> &p_script) const;
 
 	void set_class_name(String p_class_name);
 	String get_class_name() const;
@@ -199,7 +193,6 @@ public:
 };
 
 class NativeScriptInstance : public ScriptInstance {
-
 	friend class NativeScript;
 
 	Object *owner;
@@ -250,7 +243,6 @@ public:
 class NativeReloadNode;
 
 class NativeScriptLanguage : public ScriptLanguage {
-
 	friend class NativeScript;
 	friend class NativeScriptInstance;
 	friend class NativeReloadNode;
@@ -275,7 +267,7 @@ private:
 
 	void call_libraries_cb(const StringName &name);
 
-	Vector<Pair<bool, godot_instance_binding_functions>> binding_functions;
+	Vector<Pair<bool, godot_nativescript_instance_binding_functions>> binding_functions;
 	Set<Vector<void *> *> binding_instances;
 
 	Map<int, HashMap<StringName, const void *>> global_type_tags;
@@ -368,7 +360,7 @@ public:
 	virtual int profiling_get_accumulated_data(ProfilingInfo *p_info_arr, int p_info_max);
 	virtual int profiling_get_frame_data(ProfilingInfo *p_info_arr, int p_info_max);
 
-	int register_binding_functions(godot_instance_binding_functions p_binding_functions);
+	int register_binding_functions(godot_nativescript_instance_binding_functions p_binding_functions);
 	void unregister_binding_functions(int p_idx);
 
 	void *get_instance_binding_data(int p_idx, Object *p_object);
@@ -394,19 +386,18 @@ inline NativeScriptDesc *NativeScript::get_script_desc() const {
 
 class NativeReloadNode : public Node {
 	GDCLASS(NativeReloadNode, Node);
-	bool unloaded;
+	bool unloaded = false;
 
 public:
 	static void _bind_methods();
 	void _notification(int p_what);
 
-	NativeReloadNode() :
-			unloaded(false) {}
+	NativeReloadNode() {}
 };
 
 class ResourceFormatLoaderNativeScript : public ResourceFormatLoader {
 public:
-	virtual RES load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr);
+	virtual RES load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, bool p_no_cache = false);
 	virtual void get_recognized_extensions(List<String> *p_extensions) const;
 	virtual bool handles_type(const String &p_type) const;
 	virtual String get_resource_type(const String &p_path) const;

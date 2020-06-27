@@ -35,7 +35,7 @@
 
 #include "servers/display_server.h"
 
-#include "core/input/input_filter.h"
+#include "core/input/input.h"
 
 #include "drivers/alsa/audio_driver_alsa.h"
 #include "drivers/alsamidi/midi_driver_alsamidi.h"
@@ -170,10 +170,13 @@ class DisplayServerX11 : public DisplayServer {
 		int opcode;
 		Vector<int> touch_devices;
 		Map<int, Vector2> absolute_devices;
-		Map<int, Vector3> pen_devices;
+		Map<int, Vector2> pen_pressure_range;
+		Map<int, Vector2> pen_tilt_x_range;
+		Map<int, Vector2> pen_tilt_y_range;
 		XIEventMask all_event_mask;
 		Map<int, Vector2> state;
 		double pressure;
+		bool pressure_supported;
 		Vector2 tilt;
 		Vector2 mouse_pos_to_filter;
 		Vector2 relative_motion;
@@ -324,7 +327,11 @@ public:
 	virtual CursorShape cursor_get_shape() const;
 	virtual void cursor_set_custom_image(const RES &p_cursor, CursorShape p_shape, const Vector2 &p_hotspot);
 
-	virtual LatinKeyboardVariant get_latin_keyboard_variant() const;
+	virtual int keyboard_get_layout_count() const;
+	virtual int keyboard_get_current_layout() const;
+	virtual void keyboard_set_current_layout(int p_index);
+	virtual String keyboard_get_layout_language(int p_index) const;
+	virtual String keyboard_get_layout_name(int p_index) const;
 
 	virtual void process_events();
 

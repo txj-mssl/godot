@@ -35,7 +35,6 @@
 #include "scene/resources/curve.h"
 
 class Path2D : public Node2D {
-
 	GDCLASS(Path2D, Node2D);
 
 	Ref<Curve2D> curve;
@@ -56,11 +55,10 @@ public:
 	void set_curve(const Ref<Curve2D> &p_curve);
 	Ref<Curve2D> get_curve() const;
 
-	Path2D();
+	Path2D() {}
 };
 
 class PathFollow2D : public Node2D {
-
 	GDCLASS(PathFollow2D, Node2D);
 
 public:

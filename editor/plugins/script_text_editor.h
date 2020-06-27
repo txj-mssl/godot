@@ -37,7 +37,6 @@
 #include "script_editor_plugin.h"
 
 class ConnectionInfoDialog : public AcceptDialog {
-
 	GDCLASS(ConnectionInfoDialog, AcceptDialog);
 
 	Label *method;
@@ -52,7 +51,6 @@ public:
 };
 
 class ScriptTextEditor : public ScriptEditorBase {
-
 	GDCLASS(ScriptTextEditor, ScriptEditorBase);
 
 	CodeTextEditor *code_editor;
@@ -161,7 +159,6 @@ protected:
 	void _load_theme_settings();
 	void _set_theme_for_script();
 	void _show_warnings_panel(bool p_show);
-	void _error_pressed();
 	void _warning_clicked(Variant p_line);
 
 	void _notification(int p_what);
@@ -187,6 +184,8 @@ protected:
 	Variant get_drag_data_fw(const Point2 &p_point, Control *p_from);
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
 	void drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from);
+
+	String _get_absolute_path(const String &rel_path);
 
 public:
 	void _update_connected_methods();

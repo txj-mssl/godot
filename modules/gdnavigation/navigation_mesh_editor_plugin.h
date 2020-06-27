@@ -46,8 +46,8 @@ class NavigationMeshEditor : public Control {
 	AcceptDialog *err_dialog;
 
 	HBoxContainer *bake_hbox;
-	ToolButton *button_bake;
-	ToolButton *button_reset;
+	Button *button_bake;
+	Button *button_reset;
 	Label *bake_info;
 
 	NavigationRegion3D *node;
@@ -67,7 +67,6 @@ public:
 };
 
 class NavigationMeshEditorPlugin : public EditorPlugin {
-
 	GDCLASS(NavigationMeshEditorPlugin, EditorPlugin);
 
 	NavigationMeshEditor *navigation_mesh_editor;

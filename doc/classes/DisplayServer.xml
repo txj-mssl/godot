@@ -92,7 +92,7 @@
 			</argument>
 			<argument index="1" name="description" type="String">
 			</argument>
-			<argument index="2" name="existing_text" type="PackedStringArray">
+			<argument index="2" name="existing_text" type="String">
 			</argument>
 			<argument index="3" name="callback" type="Callable">
 			</argument>
@@ -123,12 +123,6 @@
 		</method>
 		<method name="force_process_and_drop_events">
 			<return type="void">
-			</return>
-			<description>
-			</description>
-		</method>
-		<method name="get_latin_keyboard_variant" qualifiers="const">
-			<return type="int" enum="DisplayServer.LatinKeyboardVariant">
 			</return>
 			<description>
 			</description>
@@ -389,6 +383,52 @@
 			<description>
 			</description>
 		</method>
+		<method name="keyboard_get_current_layout" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+				Returns active keyboard layout index.
+				[b]Note:[/b] This method is implemented on Linux, macOS and Windows.
+			</description>
+		</method>
+		<method name="keyboard_get_layout_count" qualifiers="const">
+			<return type="int">
+			</return>
+			<description>
+				Returns the number of keyboard layouts.
+				[b]Note:[/b] This method is implemented on Linux, macOS and Windows.
+			</description>
+		</method>
+		<method name="keyboard_get_layout_language" qualifiers="const">
+			<return type="String">
+			</return>
+			<argument index="0" name="index" type="int">
+			</argument>
+			<description>
+				Returns the ISO-639/BCP-47 language code of the keyboard layout at position [code]index[/code].
+				[b]Note:[/b] This method is implemented on Linux, macOS and Windows.
+			</description>
+		</method>
+		<method name="keyboard_get_layout_name" qualifiers="const">
+			<return type="String">
+			</return>
+			<argument index="0" name="index" type="int">
+			</argument>
+			<description>
+				Returns the localized name of the keyboard layout at position [code]index[/code].
+				[b]Note:[/b] This method is implemented on Linux, macOS and Windows.
+			</description>
+		</method>
+		<method name="keyboard_set_current_layout">
+			<return type="void">
+			</return>
+			<argument index="0" name="index" type="int">
+			</argument>
+			<description>
+				Sets active keyboard layout.
+				[b]Note:[/b] This method is implemented on Linux, macOS and Windows.
+			</description>
+		</method>
 		<method name="mouse_get_absolute_position" qualifiers="const">
 			<return type="Vector2i">
 			</return>
@@ -591,6 +631,10 @@
 			<argument index="1" name="position" type="Rect2" default="Rect2i( 0, 0, 0, 0 )">
 			</argument>
 			<argument index="2" name="max_length" type="int" default="-1">
+			</argument>
+			<argument index="3" name="cursor_start" type="int" default="-1">
+			</argument>
+			<argument index="4" name="cursor_end" type="int" default="-1">
 			</argument>
 			<description>
 			</description>
@@ -1016,30 +1060,6 @@
 		<constant name="WINDOW_FLAG_NO_FOCUS" value="4" enum="WindowFlags">
 		</constant>
 		<constant name="WINDOW_FLAG_MAX" value="5" enum="WindowFlags">
-		</constant>
-		<constant name="WINDOW_FLAG_RESIZE_DISABLED_BIT" value="1" enum="WindowFlags">
-		</constant>
-		<constant name="WINDOW_FLAG_BORDERLESS_BIT" value="2" enum="WindowFlags">
-		</constant>
-		<constant name="WINDOW_FLAG_ALWAYS_ON_TOP_BIT" value="4" enum="WindowFlags">
-		</constant>
-		<constant name="WINDOW_FLAG_TRANSPARENT_BIT" value="8" enum="WindowFlags">
-		</constant>
-		<constant name="WINDOW_FLAG_NO_FOCUS_BIT" value="16" enum="WindowFlags">
-		</constant>
-		<constant name="LATIN_KEYBOARD_QWERTY" value="0" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_QWERTZ" value="1" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_AZERTY" value="2" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_QZERTY" value="3" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_DVORAK" value="4" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_NEO" value="5" enum="LatinKeyboardVariant">
-		</constant>
-		<constant name="LATIN_KEYBOARD_COLEMAK" value="6" enum="LatinKeyboardVariant">
 		</constant>
 		<constant name="WINDOW_EVENT_MOUSE_ENTER" value="0" enum="WindowEvent">
 		</constant>

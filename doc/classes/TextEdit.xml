@@ -299,7 +299,7 @@
 			</description>
 		</method>
 		<method name="search" qualifiers="const">
-			<return type="PackedInt32Array">
+			<return type="Dictionary">
 			</return>
 			<argument index="0" name="key" type="String">
 			</argument>
@@ -311,13 +311,13 @@
 			</argument>
 			<description>
 				Perform a search inside the text. Search flags can be specified in the [enum SearchFlags] enum.
-				Returns an empty [code]PackedInt32Array[/code] if no result was found. Otherwise, the result line and column can be accessed at indices specified in the [enum SearchResult] enum, e.g:
+				Returns an empty [code]Dictionary[/code] if no result was found. Otherwise, returns a [code]Dictionary[/code] containing [code]line[/code] and [code]column[/code] entries, e.g:
 				[codeblock]
 				var result = search(key, flags, line, column)
-				if result.size() &gt; 0:
+				if !result.empty():
 				    # Result found.
-				    var res_line = result[TextEdit.SEARCH_RESULT_LINE]
-				    var res_column = result[TextEdit.SEARCH_RESULT_COLUMN]
+				    var line_number = result.line
+				    var column_number = result.column
 				[/codeblock]
 			</description>
 		</method>
@@ -341,6 +341,17 @@
 			</return>
 			<description>
 				Select all the text.
+			</description>
+		</method>
+		<method name="set_line">
+			<return type="void">
+			</return>
+			<argument index="0" name="line" type="int">
+			</argument>
+			<argument index="1" name="new_text" type="String">
+			</argument>
+			<description>
+				Sets the text for a specific line.
 			</description>
 		</method>
 		<method name="set_line_as_hidden">
@@ -433,6 +444,7 @@
 		</member>
 		<member name="mouse_default_cursor_shape" type="int" setter="set_default_cursor_shape" getter="get_default_cursor_shape" override="true" enum="Control.CursorShape" default="1" />
 		<member name="override_selected_font_color" type="bool" setter="set_override_selected_font_color" getter="is_overriding_selected_font_color" default="false">
+			If [code]true[/code], custom [code]font_color_selected[/code] will be used for selected text.
 		</member>
 		<member name="readonly" type="bool" setter="set_readonly" getter="is_readonly" default="false">
 			If [code]true[/code], read-only mode is enabled. Existing text cannot be modified and new text cannot be added.
@@ -524,12 +536,6 @@
 		<constant name="SEARCH_BACKWARDS" value="4" enum="SearchFlags">
 			Search from end to beginning.
 		</constant>
-		<constant name="SEARCH_RESULT_COLUMN" value="0" enum="SearchResult">
-			Used to access the result column from [method search].
-		</constant>
-		<constant name="SEARCH_RESULT_LINE" value="1" enum="SearchResult">
-			Used to access the result line from [method search].
-		</constant>
 		<constant name="MENU_CUT" value="0" enum="MenuItems">
 			Cuts (copies and clears) the selected text.
 		</constant>
@@ -611,6 +617,7 @@
 		<theme_item name="font_color_readonly" type="Color" default="Color( 0.88, 0.88, 0.88, 0.5 )">
 		</theme_item>
 		<theme_item name="font_color_selected" type="Color" default="Color( 0, 0, 0, 1 )">
+			Sets the [Color] of the selected text. [member override_selected_font_color] has to be enabled.
 		</theme_item>
 		<theme_item name="function_color" type="Color" default="Color( 0.4, 0.64, 0.81, 1 )">
 		</theme_item>

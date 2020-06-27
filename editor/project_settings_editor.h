@@ -36,11 +36,11 @@
 #include "editor/editor_data.h"
 #include "editor/editor_plugin_settings.h"
 #include "editor/editor_sectioned_inspector.h"
+#include "editor/shader_globals_editor.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/tab_container.h"
 
 class ProjectSettingsEditor : public AcceptDialog {
-
 	GDCLASS(ProjectSettingsEditor, AcceptDialog);
 
 	enum InputType {
@@ -85,6 +85,7 @@ class ProjectSettingsEditor : public AcceptDialog {
 	OptionButton *device_index;
 	Label *device_index_label;
 	MenuButton *popup_copy_to_feature;
+	ShaderGlobalsEditor *shaders_global_variables_editor;
 
 	LineEdit *action_name;
 	Button *action_add;
@@ -173,7 +174,7 @@ class ProjectSettingsEditor : public AcceptDialog {
 	Label *restart_label;
 	TextureRect *restart_icon;
 	PanelContainer *restart_container;
-	ToolButton *restart_close_button;
+	Button *restart_close_button;
 
 	void _editor_restart_request();
 	void _editor_restart();

@@ -20,8 +20,8 @@ namespace GodotTools
         private ItemList buildTabsList;
         private TabContainer buildTabs;
 
-        private ToolButton warningsBtn;
-        private ToolButton errorsBtn;
+        private Button warningsBtn;
+        private Button errorsBtn;
         private Button viewLogBtn;
 
         private void _UpdateBuildTabsList()
@@ -205,9 +205,9 @@ namespace GodotTools
             if (what == EditorSettings.NotificationEditorSettingsChanged)
             {
                 var editorBaseControl = editorInterface.GetBaseControl();
-                panelTabs.AddStyleboxOverride("panel", editorBaseControl.GetStylebox("DebuggerPanel", "EditorStyles"));
-                panelTabs.AddStyleboxOverride("tab_fg", editorBaseControl.GetStylebox("DebuggerTabFG", "EditorStyles"));
-                panelTabs.AddStyleboxOverride("tab_bg", editorBaseControl.GetStylebox("DebuggerTabBG", "EditorStyles"));
+                panelTabs.AddThemeStyleboxOverride("panel", editorBaseControl.GetThemeStylebox("DebuggerPanel", "EditorStyles"));
+                panelTabs.AddThemeStyleboxOverride("tab_fg", editorBaseControl.GetThemeStylebox("DebuggerTabFG", "EditorStyles"));
+                panelTabs.AddThemeStyleboxOverride("tab_bg", editorBaseControl.GetThemeStylebox("DebuggerTabBG", "EditorStyles"));
             }
         }
 
@@ -258,9 +258,9 @@ namespace GodotTools
                 RectMinSize = new Vector2(0, 228) * EditorScale,
                 SizeFlagsVertical = (int)SizeFlags.ExpandFill
             };
-            panelTabs.AddStyleboxOverride("panel", editorBaseControl.GetStylebox("DebuggerPanel", "EditorStyles"));
-            panelTabs.AddStyleboxOverride("tab_fg", editorBaseControl.GetStylebox("DebuggerTabFG", "EditorStyles"));
-            panelTabs.AddStyleboxOverride("tab_bg", editorBaseControl.GetStylebox("DebuggerTabBG", "EditorStyles"));
+            panelTabs.AddThemeStyleboxOverride("panel", editorBaseControl.GetThemeStylebox("DebuggerPanel", "EditorStyles"));
+            panelTabs.AddThemeStyleboxOverride("tab_fg", editorBaseControl.GetThemeStylebox("DebuggerTabFG", "EditorStyles"));
+            panelTabs.AddThemeStyleboxOverride("tab_bg", editorBaseControl.GetThemeStylebox("DebuggerTabBG", "EditorStyles"));
             AddChild(panelTabs);
 
             {
@@ -285,7 +285,7 @@ namespace GodotTools
 
                 toolBarHBox.AddSpacer(begin: false);
 
-                warningsBtn = new ToolButton
+                warningsBtn = new Button
                 {
                     Text = "Warnings".TTR(),
                     ToggleMode = true,
@@ -296,7 +296,7 @@ namespace GodotTools
                 warningsBtn.Toggled += _WarningsToggled;
                 toolBarHBox.AddChild(warningsBtn);
 
-                errorsBtn = new ToolButton
+                errorsBtn = new Button
                 {
                     Text = "Errors".TTR(),
                     ToggleMode = true,

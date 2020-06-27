@@ -45,13 +45,11 @@
 #include "scene/gui/slider.h"
 #include "scene/gui/texture_progress.h"
 #include "scene/gui/texture_rect.h"
-#include "scene/gui/tool_button.h"
 #include "scene/gui/tree.h"
 
 class EditorAudioBuses;
 
 class EditorAudioBus : public PanelContainer {
-
 	GDCLASS(EditorAudioBus, PanelContainer);
 
 	Ref<Texture2D> disabled_vu;
@@ -93,6 +91,7 @@ class EditorAudioBus : public PanelContainer {
 	mutable bool hovering_drop;
 
 	void _gui_input(const Ref<InputEvent> &p_event);
+	void _unhandled_key_input(Ref<InputEvent> p_event);
 	void _bus_popup_pressed(int p_option);
 
 	void _name_changed(const String &p_new_name);
@@ -137,7 +136,6 @@ public:
 };
 
 class EditorAudioBusDrop : public Control {
-
 	GDCLASS(EditorAudioBusDrop, Control);
 
 	virtual bool can_drop_data(const Point2 &p_point, const Variant &p_data) const;
@@ -154,7 +152,6 @@ public:
 };
 
 class EditorAudioBuses : public VBoxContainer {
-
 	GDCLASS(EditorAudioBuses, VBoxContainer);
 
 	HBoxContainer *top_hb;
@@ -246,10 +243,10 @@ private:
 	List<AudioNotch> notches;
 
 public:
-	float line_length;
-	float label_space;
-	float btm_padding;
-	float top_padding;
+	float line_length = 5.0f;
+	float label_space = 2.0f;
+	float btm_padding = 9.0f;
+	float top_padding = 5.0f;
 	Color notch_color;
 
 	void add_notch(float p_normalized_offset, float p_db_value, bool p_render_value = false);
@@ -265,7 +262,6 @@ public:
 };
 
 class AudioBusesEditorPlugin : public EditorPlugin {
-
 	GDCLASS(AudioBusesEditorPlugin, EditorPlugin);
 
 	EditorAudioBuses *audio_bus_editor;

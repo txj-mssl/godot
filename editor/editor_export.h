@@ -43,7 +43,6 @@ class EditorFileSystemDirectory;
 struct EditorProgress;
 
 class EditorExportPreset : public Reference {
-
 	GDCLASS(EditorExportPreset, Reference);
 
 public:
@@ -61,14 +60,14 @@ public:
 
 private:
 	Ref<EditorExportPlatform> platform;
-	ExportFilter export_filter;
+	ExportFilter export_filter = EXPORT_ALL_RESOURCES;
 	String include_filter;
 	String exclude_filter;
 	String export_path;
 
 	String exporter;
 	Set<String> selected_files;
-	bool runnable;
+	bool runnable = false;
 
 	Vector<String> patches;
 
@@ -82,7 +81,7 @@ private:
 
 	String custom_features;
 
-	int script_mode;
+	int script_mode = MODE_SCRIPT_COMPILED;
 	String script_key;
 
 protected:
@@ -94,6 +93,8 @@ public:
 	Ref<EditorExportPlatform> get_platform() const;
 
 	bool has(const StringName &p_property) const { return values.has(p_property); }
+
+	void update_files_to_export();
 
 	Vector<String> get_files_to_export() const;
 
@@ -136,7 +137,7 @@ public:
 
 	const List<PropertyInfo> &get_properties() const { return properties; }
 
-	EditorExportPreset();
+	EditorExportPreset() {}
 };
 
 struct SharedObject {
@@ -152,7 +153,6 @@ struct SharedObject {
 };
 
 class EditorExportPlatform : public Reference {
-
 	GDCLASS(EditorExportPlatform, Reference);
 
 public:
@@ -161,7 +161,6 @@ public:
 
 private:
 	struct SavedData {
-
 		uint64_t ofs;
 		uint64_t size;
 		Vector<uint8_t> md5;
@@ -173,7 +172,6 @@ private:
 	};
 
 	struct PackData {
-
 		FileAccess *f;
 		Vector<SavedData> file_ofs;
 		EditorProgress *ep;
@@ -181,7 +179,6 @@ private:
 	};
 
 	struct ZipData {
-
 		void *zip;
 		EditorProgress *ep;
 	};
@@ -232,6 +229,7 @@ public:
 	virtual Ref<EditorExportPreset> create_preset();
 
 	virtual void get_export_options(List<ExportOption> *r_options) = 0;
+	virtual bool should_update_export_options() { return false; }
 	virtual bool get_option_visibility(const String &p_option, const Map<StringName, Variant> &p_options) const { return true; }
 
 	virtual String get_os_name() const = 0;
@@ -270,6 +268,7 @@ public:
 	virtual Error export_zip(const Ref<EditorExportPreset> &p_preset, bool p_debug, const String &p_path, int p_flags = 0);
 	virtual void get_platform_features(List<String> *r_features) = 0;
 	virtual void resolve_platform_feature_priorities(const Ref<EditorExportPreset> &p_preset, Set<String> &p_features) = 0;
+	virtual String get_debug_protocol() const { return "tcp://"; }
 
 	EditorExportPlatform();
 };
@@ -354,6 +353,8 @@ class EditorExport : public Node {
 	Vector<Ref<EditorExportPreset>> export_presets;
 	Vector<Ref<EditorExportPlugin>> export_plugins;
 
+	StringName _export_presets_updated;
+
 	Timer *save_timer;
 	bool block_save;
 
@@ -385,7 +386,7 @@ public:
 	Vector<Ref<EditorExportPlugin>> get_export_plugins();
 
 	void load_config();
-
+	void update_export_presets();
 	bool poll_export_platforms();
 
 	EditorExport();
@@ -393,7 +394,6 @@ public:
 };
 
 class EditorExportPlatformPC : public EditorExportPlatform {
-
 	GDCLASS(EditorExportPlatformPC, EditorExportPlatform);
 
 public:
@@ -455,7 +455,6 @@ public:
 };
 
 class EditorExportTextSceneToBinaryPlugin : public EditorExportPlugin {
-
 	GDCLASS(EditorExportTextSceneToBinaryPlugin, EditorExportPlugin);
 
 public:

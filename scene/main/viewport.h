@@ -51,7 +51,6 @@ class Viewport;
 class CollisionObject3D;
 
 class ViewportTexture : public Texture2D {
-
 	GDCLASS(ViewportTexture, Texture2D);
 
 	NodePath path;
@@ -85,7 +84,6 @@ public:
 };
 
 class Viewport : public Node {
-
 	GDCLASS(Viewport, Node);
 
 public:
@@ -106,10 +104,16 @@ public:
 		MSAA_4X,
 		MSAA_8X,
 		MSAA_16X,
+		MSAA_MAX
+	};
+
+	enum ScreenSpaceAA {
+		SCREEN_SPACE_AA_DISABLED,
+		SCREEN_SPACE_AA_FXAA,
+		SCREEN_SPACE_AA_MAX
 	};
 
 	enum RenderInfo {
-
 		RENDER_INFO_OBJECTS_IN_FRAME,
 		RENDER_INFO_VERTICES_IN_FRAME,
 		RENDER_INFO_MATERIAL_CHANGES_IN_FRAME,
@@ -133,7 +137,11 @@ public:
 		DEBUG_DRAW_DIRECTIONAL_SHADOW_ATLAS,
 		DEBUG_DRAW_SCENE_LUMINANCE,
 		DEBUG_DRAW_SSAO,
-		DEBUG_DRAW_ROUGHNESS_LIMITER
+		DEBUG_DRAW_PSSM_SPLITS,
+		DEBUG_DRAW_DECAL_ATLAS,
+		DEBUG_DRAW_SDFGI,
+		DEBUG_DRAW_SDFGI_PROBES,
+		DEBUG_DRAW_GI_BUFFER,
 	};
 
 	enum DefaultCanvasItemTextureFilter {
@@ -203,7 +211,7 @@ private:
 	Transform2D stretch_transform;
 
 	Size2i size;
-	Size2i size_override;
+	Size2i size_2d_override;
 	bool size_allocated;
 
 	RID contact_2d_debug;
@@ -228,7 +236,6 @@ private:
 	bool physics_has_last_mousepos;
 	Vector2 physics_last_mousepos;
 	struct {
-
 		bool alt;
 		bool control;
 		bool shift;
@@ -245,8 +252,8 @@ private:
 	Map<ObjectID, uint64_t> physics_2d_mouseover;
 
 	Ref<World2D> world_2d;
-	Ref<World3D> world;
-	Ref<World3D> own_world;
+	Ref<World3D> world_3d;
+	Ref<World3D> own_world_3d;
 
 	Rect2i to_screen_rect;
 	StringName input_group;
@@ -271,6 +278,7 @@ private:
 	ShadowAtlasQuadrantSubdiv shadow_atlas_quadrant_subdiv[4];
 
 	MSAA msaa;
+	ScreenSpaceAA screen_space_aa;
 	Ref<ViewportTexture> default_texture;
 	Set<ViewportTexture *> viewport_textures;
 
@@ -421,7 +429,7 @@ private:
 
 	void _gui_set_root_order_dirty();
 
-	void _own_world_changed();
+	void _own_world_3d_changed();
 
 	friend class Window;
 
@@ -434,9 +442,10 @@ private:
 	SubWindowResize _sub_window_get_resize_margin(Window *p_subwindow, const Point2 &p_point);
 
 protected:
-	void _set_size(const Size2i &p_size, const Size2i &p_size_override, const Rect2i &p_to_screen_rect, const Transform2D &p_stretch_transform, bool p_allocated);
+	void _set_size(const Size2i &p_size, const Size2i &p_size_2d_override, const Rect2i &p_to_screen_rect, const Transform2D &p_stretch_transform, bool p_allocated);
 
 	Size2i _get_size() const;
+	Size2i _get_size_2d_override() const;
 	bool _is_size_allocated() const;
 
 	void _notification(int p_what);
@@ -467,10 +476,10 @@ public:
 	Rect2 get_visible_rect() const;
 	RID get_viewport_rid() const;
 
-	void set_world(const Ref<World3D> &p_world);
+	void set_world_3d(const Ref<World3D> &p_world_3d);
 	void set_world_2d(const Ref<World2D> &p_world_2d);
-	Ref<World3D> get_world() const;
-	Ref<World3D> find_world() const;
+	Ref<World3D> get_world_3d() const;
+	Ref<World3D> find_world_3d() const;
 
 	Ref<World2D> get_world_2d() const;
 	Ref<World2D> find_world_2d() const;
@@ -503,11 +512,14 @@ public:
 	void set_msaa(MSAA p_msaa);
 	MSAA get_msaa() const;
 
+	void set_screen_space_aa(ScreenSpaceAA p_screen_space_aa);
+	ScreenSpaceAA get_screen_space_aa() const;
+
 	Vector2 get_camera_coords(const Vector2 &p_viewport_coords) const;
 	Vector2 get_camera_rect_size() const;
 
-	void set_use_own_world(bool p_world);
-	bool is_using_own_world() const;
+	void set_use_own_world_3d(bool p_world_3d);
+	bool is_using_own_world_3d() const;
 
 	void input_text(const String &p_text);
 	void input(const Ref<InputEvent> &p_event, bool p_local_coords = false);
@@ -566,7 +578,6 @@ public:
 };
 
 class SubViewport : public Viewport {
-
 	GDCLASS(SubViewport, Viewport);
 
 public:
@@ -588,19 +599,27 @@ public:
 private:
 	UpdateMode update_mode;
 	ClearMode clear_mode;
-	bool arvr;
+	bool xr;
+	bool size_2d_override_stretch;
 
 protected:
 	static void _bind_methods();
 	virtual DisplayServer::WindowID get_window_id() const;
+	Transform2D _stretch_transform();
 	void _notification(int p_what);
 
 public:
 	void set_size(const Size2i &p_size);
 	Size2i get_size() const;
 
-	void set_use_arvr(bool p_use_arvr);
-	bool is_using_arvr();
+	void set_size_2d_override(const Size2i &p_size);
+	Size2i get_size_2d_override() const;
+
+	void set_use_xr(bool p_use_xr);
+	bool is_using_xr();
+
+	void set_size_2d_override_stretch(bool p_enable);
+	bool is_size_2d_override_stretch_enabled() const;
 
 	void set_update_mode(UpdateMode p_mode);
 	UpdateMode get_update_mode() const;
@@ -614,6 +633,7 @@ public:
 VARIANT_ENUM_CAST(SubViewport::UpdateMode);
 VARIANT_ENUM_CAST(Viewport::ShadowAtlasQuadrantSubdiv);
 VARIANT_ENUM_CAST(Viewport::MSAA);
+VARIANT_ENUM_CAST(Viewport::ScreenSpaceAA);
 VARIANT_ENUM_CAST(Viewport::DebugDraw);
 VARIANT_ENUM_CAST(SubViewport::ClearMode);
 VARIANT_ENUM_CAST(Viewport::RenderInfo);
