@@ -1525,7 +1525,7 @@ void Viewport::_gui_show_tooltip() {
 		return;
 	}
 
-	//Control *rp = which;
+	//Control *rp = which;注释掉
 
 	Control *base_tooltip = which->make_custom_tooltip(tooltip);
 
