@@ -316,13 +316,13 @@ void Window::_event_callback(DisplayServer::WindowEvent p_event) {
 		} break;
 		case DisplayServer::WINDOW_EVENT_FOCUS_IN: {
 			focused = true;
-			_propagate_window_notification(this, NOTIFICATION_WM_FOCUS_IN);
+			_propagate_window_notification(this, NOTIFICATION_WM_WINDOW_FOCUS_IN);
 			emit_signal("focus_entered");
 
 		} break;
 		case DisplayServer::WINDOW_EVENT_FOCUS_OUT: {
 			focused = false;
-			_propagate_window_notification(this, NOTIFICATION_WM_FOCUS_OUT);
+			_propagate_window_notification(this, NOTIFICATION_WM_WINDOW_FOCUS_OUT);
 			emit_signal("focus_exited");
 		} break;
 		case DisplayServer::WINDOW_EVENT_CLOSE_REQUEST: {
@@ -398,6 +398,18 @@ void Window::set_visible(bool p_visible) {
 	emit_signal(SceneStringNames::get_singleton()->visibility_changed);
 
 	RS::get_singleton()->viewport_set_active(get_viewport_rid(), visible);
+
+	//update transient exclusive
+	if (transient_parent) {
+		if (exclusive && visible) {
+			ERR_FAIL_COND_MSG(transient_parent->exclusive_child && transient_parent->exclusive_child != this, "Transient parent has another exclusive child.");
+			transient_parent->exclusive_child = this;
+		} else {
+			if (transient_parent->exclusive_child == this) {
+				transient_parent->exclusive_child = nullptr;
+			}
+		}
+	}
 }
 
 void Window::_clear_transient() {

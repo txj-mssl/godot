@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  main_loop.h                                                          */
+/*  editor_performance_profiler.h                                        */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,45 +28,63 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef MAIN_LOOP_H
-#define MAIN_LOOP_H
+#ifndef EDITOR_PERFORMANCE_PROFILER_H
+#define EDITOR_PERFORMANCE_PROFILER_H
 
-#include "core/input/input_event.h"
-#include "core/reference.h"
-#include "core/script_language.h"
+#include "core/map.h"
+#include "core/ordered_hash_map.h"
+#include "main/performance.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
+#include "scene/gui/split_container.h"
+#include "scene/gui/tree.h"
 
-class MainLoop : public Object {
-	GDCLASS(MainLoop, Object);
-	OBJ_CATEGORY("Main Loop");
+class EditorPerformanceProfiler : public HSplitContainer {
+	GDCLASS(EditorPerformanceProfiler, HSplitContainer);
 
-	Ref<Script> init_script;
+private:
+	class Monitor {
+	public:
+		String name;
+		String base;
+		List<float> history;
+		float max = 0.0f;
+		TreeItem *item = nullptr;
+		Performance::MonitorType type = Performance::MONITOR_TYPE_QUANTITY;
+		int frame_index = 0;
 
-protected:
-	static void _bind_methods();
-
-public:
-	enum {
-		//make sure these are replicated in Node
-		NOTIFICATION_OS_MEMORY_WARNING = 2009,
-		NOTIFICATION_TRANSLATION_CHANGED = 2010,
-		NOTIFICATION_WM_ABOUT = 2011,
-		NOTIFICATION_CRASH = 2012,
-		NOTIFICATION_OS_IME_UPDATE = 2013,
-		NOTIFICATION_APPLICATION_RESUMED = 2014,
-		NOTIFICATION_APPLICATION_PAUSED = 2015,
-		NOTIFICATION_APPLICATION_FOCUS_IN = 2016,
-		NOTIFICATION_APPLICATION_FOCUS_OUT = 2017,
+		Monitor();
+		Monitor(String p_name, String p_base, int p_frame_index, Performance::MonitorType p_type, TreeItem *p_item);
+		void update_value(float p_value);
+		void reset();
 	};
 
-	virtual void init();
-	virtual bool iteration(float p_time);
-	virtual bool idle(float p_time);
-	virtual void finish();
+	OrderedHashMap<StringName, Monitor> monitors;
 
-	void set_init_script(const Ref<Script> &p_init_script);
+	Map<StringName, TreeItem *> base_map;
+	Tree *monitor_tree;
+	Control *monitor_draw;
+	Label *info_message;
+	StringName marker_key;
+	int marker_frame;
+	const int MARGIN = 4;
+	const int POINT_SEPARATION = 5;
+	const int MARKER_MARGIN = 2;
 
-	MainLoop() {}
-	virtual ~MainLoop() {}
+	static String _create_label(float p_value, Performance::MonitorType p_type);
+	void _monitor_select();
+	void _monitor_draw();
+	void _build_monitor_tree();
+	TreeItem *_get_monitor_base(const StringName &p_base_name);
+	TreeItem *_create_monitor_item(const StringName &p_monitor_name, TreeItem *p_base);
+	void _marker_input(const Ref<InputEvent> &p_event);
+
+public:
+	void reset();
+	void update_monitors(const Vector<StringName> &p_names);
+	void add_profile_frame(const Vector<float> &p_values);
+	List<float> *get_monitor_data(const StringName &p_name);
+	EditorPerformanceProfiler();
 };
 
-#endif // MAIN_LOOP_H
+#endif // EDITOR_PERFORMANCE_PROFILER_H
