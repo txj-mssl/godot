@@ -538,7 +538,7 @@ void ScriptEditor::_close_tab(int p_idx, bool p_save, bool p_history_back) {
 	ScriptEditorBase *current = Object::cast_to<ScriptEditorBase>(tab_container->get_child(selected));
 	if (current) {
 		if (p_save) {
-			apply_scripts();
+			_menu_option(FILE_SAVE);
 		}
 
 		Ref<Script> script = current->get_edited_resource();
@@ -1729,6 +1729,19 @@ void ScriptEditor::_update_script_names() {
 			}
 
 			sedata.push_back(sd);
+		}
+
+		Vector<String> disambiguated_script_names;
+		Vector<String> full_script_paths;
+		for (int j = 0; j < sedata.size(); j++) {
+			disambiguated_script_names.append(sedata[j].name);
+			full_script_paths.append(sedata[j].tooltip);
+		}
+
+		EditorNode::disambiguate_filenames(full_script_paths, disambiguated_script_names);
+
+		for (int j = 0; j < sedata.size(); j++) {
+			sedata.write[j].name = disambiguated_script_names[j];
 		}
 
 		EditorHelp *eh = Object::cast_to<EditorHelp>(tab_container->get_child(i));
