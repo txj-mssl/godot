@@ -1,5 +1,5 @@
 /*************************************************************************/
-/*  pane_drag.h                                                          */
+/*  packed_scene_translation_parser_plugin.h                             */
 /*************************************************************************/
 /*                       This file is part of:                           */
 /*                           GODOT ENGINE                                */
@@ -28,24 +28,22 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                */
 /*************************************************************************/
 
-#ifndef PANE_DRAG_H
-#define PANE_DRAG_H
+#ifndef PACKED_SCENE_TRANSLATION_PARSER_PLUGIN_H
+#define PACKED_SCENE_TRANSLATION_PARSER_PLUGIN_H
 
-#include "scene/gui/control.h"
+#include "editor/editor_translation_parser.h"
 
-class PaneDrag : public Control {
-	GDCLASS(PaneDrag, Control);
+class PackedSceneEditorTranslationParserPlugin : public EditorTranslationParserPlugin {
+	GDCLASS(PackedSceneEditorTranslationParserPlugin, EditorTranslationParserPlugin);
 
-	bool mouse_over;
-
-protected:
-	void _gui_input(const Ref<InputEvent> &p_input);
-	void _notification(int p_what);
-	virtual Size2 get_minimum_size() const;
-	static void _bind_methods();
+	// Scene Node's properties that contain translation strings.
+	Set<String> lookup_properties;
 
 public:
-	PaneDrag();
+	virtual Error parse_file(const String &p_path, Vector<String> *r_extracted_strings);
+	virtual void get_recognized_extensions(List<String> *r_extensions) const;
+
+	PackedSceneEditorTranslationParserPlugin();
 };
 
-#endif // PANE_DRAG_H
+#endif // PACKED_SCENE_TRANSLATION_PARSER_PLUGIN_H
