@@ -149,6 +149,8 @@ public:
 			uint32_t surface_switch_count;
 			uint32_t shader_rebind_count;
 			uint32_t vertices_count;
+			uint32_t _2d_item_count;
+			uint32_t _2d_draw_call_count;
 
 			void reset() {
 				object_count = 0;
@@ -157,6 +159,8 @@ public:
 				surface_switch_count = 0;
 				shader_rebind_count = 0;
 				vertices_count = 0;
+				_2d_item_count = 0;
+				_2d_draw_call_count = 0;
 			}
 		} render, render_final, snap;
 
@@ -443,9 +447,21 @@ public:
 
 			int light_mode;
 
+			// these flags are specifically for batching
+			// some of the logic is thus in rasterizer_storage.cpp
+			// we could alternatively set bitflags for each 'uses' and test on the fly
+			enum BatchFlags {
+				PREVENT_COLOR_BAKING = 1 << 0,
+				PREVENT_VERTEX_BAKING = 1 << 1,
+			};
+			unsigned int batch_flags;
+
 			bool uses_screen_texture;
 			bool uses_screen_uv;
 			bool uses_time;
+			bool uses_modulate;
+			bool uses_color;
+			bool uses_vertex;
 
 		} canvas_item;
 
@@ -1288,7 +1304,6 @@ public:
 
 		bool clear_request;
 		Color clear_request_color;
-		int canvas_draw_commands;
 		float time[4];
 		float delta;
 		uint64_t count;

@@ -665,7 +665,7 @@ public:
 			item_mask = 1;
 			scale = 1.0;
 			energy = 1.0;
-			item_shadow_mask = -1;
+			item_shadow_mask = 1;
 			mode = VS::CANVAS_LIGHT_MODE_ADD;
 			texture_cache = NULL;
 			next_ptr = NULL;
@@ -1066,6 +1066,8 @@ public:
 	virtual void canvas_begin() = 0;
 	virtual void canvas_end() = 0;
 
+	virtual void canvas_render_items_begin(const Color &p_modulate, Light *p_light, const Transform2D &p_base_transform) {}
+	virtual void canvas_render_items_end() {}
 	virtual void canvas_render_items(Item *p_item_list, int p_z, const Color &p_modulate, Light *p_light, const Transform2D &p_base_transform) = 0;
 	virtual void canvas_debug_viewport_shadows(Light *p_lights_with_shadow) = 0;
 
@@ -1112,6 +1114,7 @@ public:
 	virtual RasterizerScene *get_scene() = 0;
 
 	virtual void set_boot_image(const Ref<Image> &p_image, const Color &p_color, bool p_scale, bool p_use_filter = true) = 0;
+	virtual void set_shader_time_scale(float p_scale) = 0;
 
 	virtual void initialize() = 0;
 	virtual void begin_frame(double frame_step) = 0;

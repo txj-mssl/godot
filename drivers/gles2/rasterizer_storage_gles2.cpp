@@ -565,7 +565,11 @@ void RasterizerStorageGLES2::texture_allocate(RID p_texture, int p_width, int p_
 			texture->images.resize(1);
 		} break;
 		case VS::TEXTURE_TYPE_EXTERNAL: {
+#ifdef ANDROID_ENABLED
 			texture->target = _GL_TEXTURE_EXTERNAL_OES;
+#else
+			texture->target = GL_TEXTURE_2D;
+#endif
 			texture->images.resize(0);
 		} break;
 		case VS::TEXTURE_TYPE_CUBEMAP: {
@@ -1317,6 +1321,9 @@ void RasterizerStorageGLES2::sky_set_texture(RID p_sky, RID p_panorama, int p_ra
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	//reset flags on Sky Texture that may have changed
+	texture_set_flags(sky->panorama, texture->flags);
+
 	// Framebuffer did its job. thank mr framebuffer
 	glActiveTexture(GL_TEXTURE0); //back to panorama
 	glBindFramebuffer(GL_FRAMEBUFFER, RasterizerStorageGLES2::system_fbo);
@@ -1417,6 +1424,10 @@ void RasterizerStorageGLES2::_update_shader(Shader *p_shader) const {
 			p_shader->canvas_item.uses_screen_texture = false;
 			p_shader->canvas_item.uses_screen_uv = false;
 			p_shader->canvas_item.uses_time = false;
+			p_shader->canvas_item.uses_modulate = false;
+			p_shader->canvas_item.uses_color = false;
+			p_shader->canvas_item.uses_vertex = false;
+			p_shader->canvas_item.batch_flags = 0;
 
 			shaders.actions_canvas.render_mode_values["blend_add"] = Pair<int *, int>(&p_shader->canvas_item.blend_mode, Shader::CanvasItem::BLEND_MODE_ADD);
 			shaders.actions_canvas.render_mode_values["blend_mix"] = Pair<int *, int>(&p_shader->canvas_item.blend_mode, Shader::CanvasItem::BLEND_MODE_MIX);
@@ -1431,6 +1442,9 @@ void RasterizerStorageGLES2::_update_shader(Shader *p_shader) const {
 			shaders.actions_canvas.usage_flag_pointers["SCREEN_PIXEL_SIZE"] = &p_shader->canvas_item.uses_screen_uv;
 			shaders.actions_canvas.usage_flag_pointers["SCREEN_TEXTURE"] = &p_shader->canvas_item.uses_screen_texture;
 			shaders.actions_canvas.usage_flag_pointers["TIME"] = &p_shader->canvas_item.uses_time;
+			shaders.actions_canvas.usage_flag_pointers["MODULATE"] = &p_shader->canvas_item.uses_modulate;
+			shaders.actions_canvas.usage_flag_pointers["COLOR"] = &p_shader->canvas_item.uses_color;
+			shaders.actions_canvas.usage_flag_pointers["VERTEX"] = &p_shader->canvas_item.uses_vertex;
 
 			actions = &shaders.actions_canvas;
 			actions->uniforms = &p_shader->uniforms;
@@ -1517,6 +1531,16 @@ void RasterizerStorageGLES2::_update_shader(Shader *p_shader) const {
 
 	p_shader->uses_vertex_time = gen_code.uses_vertex_time;
 	p_shader->uses_fragment_time = gen_code.uses_fragment_time;
+
+	// some logic for batching
+	if (p_shader->mode == VS::SHADER_CANVAS_ITEM) {
+		if (p_shader->canvas_item.uses_modulate | p_shader->canvas_item.uses_color) {
+			p_shader->canvas_item.batch_flags |= Shader::CanvasItem::PREVENT_COLOR_BAKING;
+		}
+		if (p_shader->canvas_item.uses_vertex) {
+			p_shader->canvas_item.batch_flags |= Shader::CanvasItem::PREVENT_VERTEX_BAKING;
+		}
+	}
 
 	p_shader->shader->set_custom_shader(p_shader->custom_code_id);
 	p_shader->shader->bind();
@@ -5760,6 +5784,8 @@ void RasterizerStorageGLES2::render_info_end_capture() {
 	info.snap.surface_switch_count = info.render.surface_switch_count - info.snap.surface_switch_count;
 	info.snap.shader_rebind_count = info.render.shader_rebind_count - info.snap.shader_rebind_count;
 	info.snap.vertices_count = info.render.vertices_count - info.snap.vertices_count;
+	info.snap._2d_item_count = info.render._2d_item_count - info.snap._2d_item_count;
+	info.snap._2d_draw_call_count = info.render._2d_draw_call_count - info.snap._2d_draw_call_count;
 }
 
 int RasterizerStorageGLES2::get_captured_render_info(VS::RenderInfo p_info) {
@@ -5783,6 +5809,12 @@ int RasterizerStorageGLES2::get_captured_render_info(VS::RenderInfo p_info) {
 		case VS::INFO_DRAW_CALLS_IN_FRAME: {
 			return info.snap.draw_call_count;
 		} break;
+		case VS::INFO_2D_ITEMS_IN_FRAME: {
+			return info.snap._2d_item_count;
+		} break;
+		case VS::INFO_2D_DRAW_CALLS_IN_FRAME: {
+			return info.snap._2d_draw_call_count;
+		} break;
 		default: {
 			return get_render_info(p_info);
 		}
@@ -5803,6 +5835,10 @@ int RasterizerStorageGLES2::get_render_info(VS::RenderInfo p_info) {
 			return info.render_final.surface_switch_count;
 		case VS::INFO_DRAW_CALLS_IN_FRAME:
 			return info.render_final.draw_call_count;
+		case VS::INFO_2D_ITEMS_IN_FRAME:
+			return info.render_final._2d_item_count;
+		case VS::INFO_2D_DRAW_CALLS_IN_FRAME:
+			return info.render_final._2d_draw_call_count;
 		case VS::INFO_USAGE_VIDEO_MEM_TOTAL:
 			return 0; //no idea
 		case VS::INFO_VIDEO_MEM_USED:
@@ -5931,12 +5967,15 @@ void RasterizerStorageGLES2::initialize() {
 	config.support_write_depth = config.extensions.has("GL_EXT_frag_depth");
 #endif
 
+	config.support_half_float_vertices = true;
+//every platform should support this except web, iOS has issues with their support, so add option to disable
 #ifdef JAVASCRIPT_ENABLED
 	config.support_half_float_vertices = false;
-#else
-	//every other platform, be it mobile or desktop, supports this (even if not in the GLES2 spec).
-	config.support_half_float_vertices = true;
 #endif
+	bool disable_half_float = GLOBAL_GET("rendering/gles2/compatibility/disable_half_float");
+	if (disable_half_float) {
+		config.support_half_float_vertices = false;
+	}
 
 	config.rgtc_supported = config.extensions.has("GL_EXT_texture_compression_rgtc") || config.extensions.has("GL_ARB_texture_compression_rgtc") || config.extensions.has("EXT_texture_compression_rgtc");
 	config.bptc_supported = config.extensions.has("GL_ARB_texture_compression_bptc") || config.extensions.has("EXT_texture_compression_bptc");
